@@ -35,7 +35,8 @@ def detect():
         cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
     # Save the output image with the bounding boxes
-    output_path = 'output.jpg'
+    output_filename = 'output.jpg'
+    output_path = os.path.join(app.static_folder, output_filename)
     cv2.imwrite(output_path, image)
 
     # Remove the temporary image file
