@@ -21,15 +21,19 @@ def detect_faces(image_path):
 
 def select_image():
     image_path = filedialog.askopenfilename(initialdir='/', title='Select Image', filetypes=(('Image Files', '*.jpg *.jpeg *.png'), ('All Files', '*.*')))
-    detect_faces(image_path)
+    if image_path:
+        detect_faces(image_path)
 
 window = tk.Tk()
 window.title('Face Detection App')
-window.geometry("400x300")
+window.geometry("400x400")
 window.configure(bg='#FFD700')
 
 frame = tk.Frame(window, bg='#FFD700')
 frame.pack(expand=True)
+
+title_label = tk.Label(frame, text='Face Detection App', bg='#FFD700', font=('Arial', 20, 'bold'))
+title_label.pack(pady=20)
 
 select_button = tk.Button(frame, text='Select Image', command=select_image, bg='#FFA500', fg='white', font=('Arial', 14, 'bold'), relief='raised')
 select_button.pack(pady=20)
