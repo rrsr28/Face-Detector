@@ -1,7 +1,7 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request
 import cv2
-import base64
-import numpy as np
+import os
+from PIL import Image
 
 app = Flask(__name__)
 
@@ -10,28 +10,38 @@ def index():
     return render_template('index.html')
 
 @app.route('/detect', methods=['POST'])
-def detect_faces():
+def detect():
+    # Get the uploaded image file
+    image_file = request.files['image']
 
-    image_data = request.form['imageData']
+    # Save the image file to a temporary location
+    image_path = 'temp.jpg'
+    image_file.save(image_path)
 
-    # Remove the base64 encoding and convert to numpy array
-    image_data = base64.b64decode(image_data.split(',')[1])
-    nparr = np.frombuffer(image_data, np.uint8)
-    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    # Load the pre-trained face detection model
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
+    # Read the image
+    image = cv2.imread(image_path)
+
+    # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+    # Detect faces in the image
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
 
+    # Draw bounding boxes around the detected faces
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
-    # Convert the result image to base64
-    _, result_image = cv2.imencode('.jpg', image)
-    result_image_base64 = base64.b64encode(result_image).decode('utf-8')
+    # Save the output image with the bounding boxes
+    output_path = 'output.jpg'
+    cv2.imwrite(output_path, image)
 
-    return jsonify(result=result_image_base64)
+    # Remove the temporary image file
+    os.remove(image_path)
+
+    return render_template('result.html', image_path=output_path)
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

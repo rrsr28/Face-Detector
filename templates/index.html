@@ -1,90 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Face Detection</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script>
-      function detectFaces() {
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext("2d");
-
-        // Clear the canvas
-        context.clearRect(0, 0, canvas.width, canvas.height);
-
-        // Get the selected option (image)
-        var option = document.getElementById("option").value;
-
-        if (option === "image") {
-          // Show the image input element
-          document.getElementById("image").style.display = "block";
-        }
-      }
-
-      function performFaceDetection() {
-        var canvas = document.getElementById("canvas");
-        var context = canvas.getContext("2d");
-
-        // Get the selected image file
-        var fileInput = document.getElementById("fileInput");
-        var file = fileInput.files[0];
-
-        if (file) {
-          var reader = new FileReader();
-
-          reader.onload = function (e) {
-            var image = new Image();
-            image.onload = function () {
-              // Resize the canvas to match the image dimensions
-              canvas.width = image.width;
-              canvas.height = image.height;
-
-              // Draw the image on the canvas
-              context.drawImage(image, 0, 0);
-
-              // Convert the canvas image to base64
-              var imageData = canvas.toDataURL("image/jpeg");
-
-              // Send the image data to the server for face detection
-              $.ajax({
-                url: "/detect",
-                type: "POST",
-                data: { imageData: imageData },
-                success: function (response) {
-                  // Create a new image element with the result image
-                  var resultImage = new Image();
-                  resultImage.src = "data:image/jpeg;base64," + response.result;
-
-                  // Display the result image
-                  document.getElementById("result").innerHTML = "";
-                  document.getElementById("result").appendChild(resultImage);
-                },
-              });
-            };
-
-            image.src = e.target.result;
-          };
-
-          reader.readAsDataURL(file);
-        }
-      }
-
-      // Show the image input element by default
-      document.getElementById("image").style.display = "block";
-    </script>
-  </head>
-  <body>
-    <h1>Face Detection</h1>
-
-    <div id="image">
-      <input type="file" id="fileInput" />
-    </div>
-
-    <br />
-
-    <button onclick="performFaceDetection()">Detect Faces</button>
-
-    <br /><br />
-
-    <div id="result"></div>
-  </body>
+<head>
+    <title>Face Detection App</title>
+</head>
+<body>
+    <h1>Face Detection App</h1>
+    <form action="/detect" method="post" enctype="multipart/form-data">
+        <input type="file" name="image" accept="image/*" required>
+        <input type="submit" value="Detect Faces">
+    </form>
+</body>
 </html>
