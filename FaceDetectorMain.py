@@ -25,11 +25,16 @@ def select_image():
 
 window = tk.Tk()
 window.title('Face Detection App')
+window.geometry("400x300")
+window.configure(bg='#FFD700')
 
-select_button = tk.Button(window, text='Select Image', command=select_image)
-select_button.pack(pady=10)
+frame = tk.Frame(window, bg='#FFD700')
+frame.pack(expand=True)
 
-num_faces_label = tk.Label(window, text="Number of faces recognized: ")
+select_button = tk.Button(frame, text='Select Image', command=select_image, bg='#FFA500', fg='white', font=('Arial', 14, 'bold'), relief='raised')
+select_button.pack(pady=20)
+
+num_faces_label = tk.Label(frame, text="Number of faces recognized: ", bg='#FFD700', font=('Arial', 12))
 num_faces_label.pack()
 
 window.mainloop()
